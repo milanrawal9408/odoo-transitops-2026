@@ -12,6 +12,7 @@ import {
   FaUser,
   FaSpinner,
   FaUsersCog,
+  FaUserShield,
 } from "react-icons/fa";
 
 function Sidebar() {
@@ -74,6 +75,12 @@ function Sidebar() {
       path: "/ai-assistant",
       icon: <FaRobot />,
       roles: ["Admin", "Fleet Manager"],
+    },
+    {
+      name: "User Roles",
+      path: "/user-roles",
+      icon: <FaUserShield />,
+      roles: ["Admin"],
     },
     {
       name: "My Profile",

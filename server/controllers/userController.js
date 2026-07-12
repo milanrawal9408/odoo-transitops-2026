@@ -24,7 +24,7 @@ const logAdminAction = async (action, details, performedBy, targetUser = null) =
 // @access  Private (Admin only)
 export const getUsers = async (req, res) => {
   try {
-    const { role, status, search, page = 1, limit = 10 } = req.query;
+    const { role, status, search, page = 1, limit = 8 } = req.query;
 
     const query = {};
 
@@ -104,7 +104,6 @@ export const getUserById = async (req, res) => {
     let trips = [];
     let assignedVehicle = null;
     let maintenances = [];
-    let fuelLogs = [];
 
     // If driver, fetch assignments and metrics
     if (user.role === "Driver") {
@@ -120,17 +119,6 @@ export const getUserById = async (req, res) => {
           .sort({ startDate: -1 })
           .limit(5);
       }
-
-      fuelLogs = await FuelLog.find({ createdBy: user._id })
-        .populate("vehicle", "vehicleNumber")
-        .sort({ date: -1 })
-        .limit(5);
-    } else {
-      // General logs logged by this admin/manager/analyst
-      fuelLogs = await FuelLog.find({ createdBy: user._id })
-        .populate("vehicle", "vehicleNumber")
-        .sort({ date: -1 })
-        .limit(5);
     }
 
     return res.status(200).json({
@@ -140,7 +128,6 @@ export const getUserById = async (req, res) => {
         trips,
         assignedVehicle,
         maintenances,
-        fuelLogs,
       },
     });
   } catch (error) {

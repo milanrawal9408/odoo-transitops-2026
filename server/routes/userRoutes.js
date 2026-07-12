@@ -17,22 +17,27 @@ const router = express.Router();
 router.use(protect);
 router.use(authorize("Admin"));
 
-router.route("/")
+router
+  .route("/")
   .get(getUsers)
   .post(createUser);
 
-router.route("/activities/log")
+router
+  .route("/activities/log")
   .get(getUserActivities);
 
-router.route("/:id")
+router
+  .route("/:id")
   .get(getUserById)
   .put(updateUser)
   .delete(deleteUser);
 
-router.route("/:id/role")
+router
+  .route("/:id/role")
   .patch(updateUserRole);
 
-router.route("/:id/status")
+router
+  .route("/:id/status")
   .patch(updateUserStatus);
 
 export default router;
