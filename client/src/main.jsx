@@ -9,8 +9,8 @@ ReactDOM.createRoot(document.getElementById("root")).render(
   <BrowserRouter>
     <App />
     <Toaster
-        position="top-right"
-        reverseOrder={false}
+      position="top-right"
+      reverseOrder={false}
     />
   </BrowserRouter>
 );

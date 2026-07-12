@@ -67,10 +67,9 @@ function Sidebar() {
             key={menu.path}
             to={menu.path}
             className={({ isActive }) =>
-              `flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 ${
-                isActive
-                  ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20"
-                  : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/50"
+              `flex items-center gap-3.5 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 ${isActive
+                ? "bg-blue-600 text-white shadow-lg shadow-blue-600/20"
+                : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/50"
               }`
             }
           >
