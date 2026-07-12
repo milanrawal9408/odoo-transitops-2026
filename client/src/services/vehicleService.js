@@ -1,12 +1,16 @@
-import axios from "axios";
+import API from "./api";
 
-const API = axios.create({
-  baseURL: "http://localhost:5000/api/vehicles",
-  withCredentials: true,
-});
+export const getVehicles = () =>
+  API.get("/vehicles");
 
-export const getVehicles = () => API.get("/");
+export const getVehicleById = (id) =>
+  API.get(`/vehicles/${id}`);
 
-export const getVehicleById = (id) => API.get(`/${id}`);
+export const createVehicle = (data) =>
+  API.post("/vehicles", data);
 
-export default API;
+export const updateVehicle = (id, data) =>
+  API.put(`/vehicles/${id}`, data);
+
+export const deleteVehicle = (id) =>
+  API.delete(`/vehicles/${id}`);
