@@ -3,7 +3,6 @@ import User from "../models/User.js";
 import Trip from "../models/Trip.js";
 import Vehicle from "../models/Vehicle.js";
 import Maintenance from "../models/Maintenance.js";
-import FuelLog from "../models/FuelLog.js";
 import ActivityLog from "../models/ActivityLog.js";
 
 // Helper to log administrative actions

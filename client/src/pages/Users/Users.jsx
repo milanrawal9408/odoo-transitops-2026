@@ -23,8 +23,10 @@ import {
   FaTools,
   FaGasPump,
   FaCalendarAlt,
+  FaChartBar,
 } from "react-icons/fa";
 import { useForm } from "react-hook-form";
+import dayjs from "dayjs";
 import {
   getUsers,
   createUser,
@@ -319,7 +321,7 @@ function Users() {
             { label: "Managers", val: stats["Fleet Manager"], icon: <FaUserTie />, grad: "from-blue-500 to-blue-700" },
             { label: "Drivers", val: stats.Driver, icon: <FaUserTie />, grad: "from-indigo-500 to-indigo-700" },
             { label: "Safety", val: stats["Safety Officer"], icon: <FaShieldAlt />, grad: "from-amber-500 to-amber-700" },
-            { label: "Analysts", val: stats["Financial Analyst"], icon: <FaCalculator />, grad: "from-purple-500 to-purple-700" },
+            { label: "Analysts", val: stats["Financial Analyst"], icon: <FaChartBar />, grad: "from-purple-500 to-purple-700" },
           ].map((c) => (
             <div key={c.label} className="bg-white rounded-xl border border-slate-100 p-4 shadow-sm flex flex-col justify-between">
               <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider">{c.label}</span>
@@ -423,7 +425,7 @@ function Users() {
                           </div>
                           <div>
                             <p className="font-semibold text-slate-800">{u.fullName}</p>
-                            <p className="text-[10px] text-slate-400">Joined: {new Date(u.createdAt).toLocaleDateString()}</p>
+                            <p className="text-[10px] text-slate-400">Joined: {dayjs(u.createdAt).format("DD MMM YYYY")}</p>
                           </div>
                         </div>
                       </td>
@@ -572,7 +574,7 @@ function Users() {
                       <p className="text-[11px] font-bold text-slate-800 leading-snug">{act.action}</p>
                       <p className="text-[10px] text-slate-500 mt-0.5 leading-snug">{act.details}</p>
                       <span className="text-[8px] font-semibold text-slate-400 uppercase tracking-wider block mt-1">
-                        By {act.performedBy?.fullName || "System"} • {new Date(act.createdAt).toLocaleTimeString()}
+                        By {act.performedBy?.fullName || "System"} • {dayjs(act.createdAt).format("DD MMM YYYY, hh:mm A")}
                       </span>
                     </div>
                   </div>
@@ -633,7 +635,7 @@ function Users() {
                       </div>
                       <div>
                         <span className="text-[9px] text-slate-400 font-bold uppercase tracking-wider block">Joined</span>
-                        <span>{new Date(selectedUserDetail.createdAt).toLocaleDateString()}</span>
+                        <span>{dayjs(selectedUserDetail.createdAt).format("DD MMM YYYY")}</span>
                       </div>
                     </div>
 
@@ -843,7 +845,7 @@ function Users() {
       {/* Role Change Confirmation Alert */}
       {roleConfirm.isOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm" onClick={() => setRoleConfirm({ isOpen: false, user: null, targetRole: "" })}>
-          <div className="bg-white rounded-2xl p-6 shadow-xl w-full max-w-sm flex flex-col items-center text-center gap-4" onClick={(e) => e.stopPropagation()}>
+          <div className="bg-white rounded-2xl p-6 shadow-xl w-full flex flex-col items-center text-center gap-4 animate-scale-in" style={{ maxWidth: "420px" }} onClick={(e) => e.stopPropagation()}>
             <div className="w-12 h-12 bg-amber-50 text-amber-600 rounded-full flex items-center justify-center text-xl shadow-inner">
               <FaShieldAlt />
             </div>
@@ -853,18 +855,20 @@ function Users() {
                 Are you sure you want to change **{roleConfirm.user.fullName}**'s role to **{roleConfirm.targetRole}**? This will instantly modify their system authorizations.
               </p>
             </div>
-            <div className="flex gap-2 w-full mt-2">
+            <div className="flex gap-3 w-full mt-2">
               <button
+                type="button"
                 onClick={() => setRoleConfirm({ isOpen: false, user: null, targetRole: "" })}
                 className="flex-1 py-2 text-xs font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-xl transition-all cursor-pointer"
               >
                 Cancel
               </button>
               <button
+                type="button"
                 onClick={confirmRoleChange}
-                className="flex-1 py-2 text-xs font-semibold text-white bg-amber-600 hover:bg-amber-700 rounded-xl transition-all cursor-pointer"
+                className="flex-1 py-2 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-xl transition-all cursor-pointer"
               >
-                Confirm Demote
+                Confirm Change
               </button>
             </div>
           </div>
