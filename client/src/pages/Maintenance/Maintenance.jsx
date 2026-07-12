@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { FaPlus } from "react-icons/fa";
 import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 import MaintenanceStats from "../../components/maintenance/MaintenanceStats";
 import MaintenanceFilters from "../../components/maintenance/MaintenanceFilters";
@@ -16,11 +17,13 @@ import {
   completeMaintenance,
   deleteMaintenance,
 } from "../../services/maintenanceService";
-import { getAllVehicles } from "../../services/vehicleService";
+import { getVehicles } from "../../services/vehicleService";
 
 import "./maintenance.css";
 
 function Maintenance() {
+  const navigate = useNavigate();
+
   // ── Data State ──
   const [records, setRecords] = useState([]);
   const [vehicles, setVehicles] = useState([]);
@@ -38,23 +41,53 @@ function Maintenance() {
   const [editingRecord, setEditingRecord] = useState(null);
   const [selectedRecord, setSelectedRecord] = useState(null);
 
+  // ── Handle 401 (not logged in) ──
+  const handleAuthError = useCallback(
+    (error) => {
+      if (error.response?.status === 401) {
+        toast.error("Session expired. Please login again.");
+        navigate("/login");
+        return true;
+      }
+      return false;
+    },
+    [navigate]
+  );
+
   // ── Fetch Data ──
   const fetchData = useCallback(async () => {
     try {
       setLoading(true);
-      const [maintRes, vehicleRes] = await Promise.all([
-        getAllMaintenances(),
-        getAllVehicles(),
-      ]);
 
-      setRecords(maintRes.data.maintenances || []);
-      setVehicles(vehicleRes.data.vehicles || []);
-    } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to fetch data");
+      // Fetch maintenance and vehicles independently so one failure doesn't block the other
+      let maintenanceData = [];
+      let vehicleData = [];
+
+      try {
+        const maintRes = await getAllMaintenances();
+        maintenanceData = maintRes.data.maintenances || [];
+      } catch (error) {
+        if (handleAuthError(error)) return;
+        toast.error(
+          error.response?.data?.message || "Failed to fetch maintenance records"
+        );
+      }
+
+      try {
+        const vehicleRes = await getVehicles();
+        vehicleData = vehicleRes.data.vehicles || [];
+      } catch (error) {
+        if (handleAuthError(error)) return;
+        // Vehicle fetch failure is non-critical, just log it
+        console.warn("Could not load vehicles for dropdown:", error.message);
+      }
+
+      setRecords(maintenanceData);
+      setVehicles(vehicleData);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [handleAuthError]);
 
   useEffect(() => {
     fetchData();
@@ -133,6 +166,7 @@ function Maintenance() {
       handleCloseModals();
       fetchData();
     } catch (error) {
+      if (handleAuthError(error)) return;
       toast.error(
         error.response?.data?.message || "Failed to save maintenance record"
       );
@@ -145,6 +179,7 @@ function Maintenance() {
       toast.success("Maintenance marked as completed");
       fetchData();
     } catch (error) {
+      if (handleAuthError(error)) return;
       toast.error(
         error.response?.data?.message || "Failed to complete maintenance"
       );
@@ -158,6 +193,7 @@ function Maintenance() {
       handleCloseModals();
       fetchData();
     } catch (error) {
+      if (handleAuthError(error)) return;
       toast.error(
         error.response?.data?.message || "Failed to delete maintenance record"
       );
