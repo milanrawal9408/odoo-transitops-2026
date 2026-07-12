@@ -1,18 +1,21 @@
-import axios from "axios";
+import API from "./api";
 
-const API = axios.create({
-  baseURL: "http://localhost:5000/api/trips",
-  withCredentials: true,
-});
+// Fetch all trips
+export const getTrips = () =>
+  API.get("/trips");
 
-export const getTrips = () => API.get("/");
+// Fetch single trip
+export const getTripById = (id) =>
+  API.get(`/trips/${id}`);
 
-export const getTripById = (id) => API.get(`/${id}`);
+// Create trip
+export const createTrip = (data) =>
+  API.post("/trips", data);
 
-export const createTrip = (data) => API.post("/", data);
+// Update trip
+export const updateTrip = (id, data) =>
+  API.put(`/trips/${id}`, data);
 
-export const updateTrip = (id, data) => API.put(`/${id}`, data);
-
-export const deleteTrip = (id) => API.delete(`/${id}`);
-
-export default API;
+// Delete trip
+export const deleteTrip = (id) =>
+  API.delete(`/trips/${id}`);
