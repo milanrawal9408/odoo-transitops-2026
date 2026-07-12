@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import authRoutes from "./routes/authRoutes.js";
+import vehicleRoutes from "./routes/vehicleRoutes.js";
 
 import connectDB from "./config/db.js";
 
@@ -30,6 +31,8 @@ app.get("/", (req, res) => {
   });
 });
 app.use("/api/auth", authRoutes);
+app.use("/api/vehicles", vehicleRoutes);
+
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
