@@ -152,3 +152,22 @@ export const getCurrentUser = async (req, res) => {
     });
   }
 };
+
+export const getDrivers = async (req, res) => {
+  try {
+    const drivers = await User.find({ role: "Driver", status: "Active" }).select(
+      "-password"
+    );
+
+    return res.status(200).json({
+      success: true,
+      count: drivers.length,
+      drivers,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
