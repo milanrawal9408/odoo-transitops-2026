@@ -7,6 +7,9 @@ import Dashboard from "../pages/Dashboard/Dashboard";
 import Vehicles from "../pages/Vehicles/Vehicles";
 import Drivers from "../pages/Drivers/Drivers";
 import Trips from "../pages/Trips/Trips";
+import TripDetail from "../pages/Trips/TripDetail";
+import AddTrip from "../pages/Trips/AddTrip";
+import EditTrip from "../pages/Trips/EditTrip";
 import Maintenance from "../pages/Maintenance/Maintenance";
 import Fuel from "../pages/Fuel/Fuel";
 import Reports from "../pages/Reports/Reports";
@@ -31,6 +34,9 @@ function AppRoutes() {
         <Route path="/vehicles" element={<Vehicles />} />
         <Route path="/drivers" element={<Drivers />} />
         <Route path="/trips" element={<Trips />} />
+        <Route path="/trips/add" element={<AddTrip />} />
+        <Route path="/trips/:id" element={<TripDetail />} />
+        <Route path="/trips/:id/edit" element={<EditTrip />} />
         <Route path="/maintenance" element={<Maintenance />} />
         <Route path="/fuel" element={<Fuel />} />
         <Route path="/reports" element={<Reports />} />
