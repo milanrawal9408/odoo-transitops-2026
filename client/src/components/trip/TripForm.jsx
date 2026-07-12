@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { FaSave, FaTimes, FaSpinner } from "react-icons/fa";
 import { getVehicles } from "../../services/vehicleService";
-import { getDrivers } from "../../services/driverService";
+import { getActiveDriverUsers } from "../../services/driverService";
 import dayjs from "dayjs";
 
 function TripForm({ onSubmit, defaultValues, isEdit, isLoading, onCancel }) {
@@ -24,7 +24,7 @@ function TripForm({ onSubmit, defaultValues, isEdit, isLoading, onCancel }) {
         setDropdownsLoading(true);
         const [vehicleRes, driverRes] = await Promise.all([
           getVehicles(),
-          getDrivers(),
+          getActiveDriverUsers(),
         ]);
         setVehicles(vehicleRes.data.vehicles || []);
         setDrivers(driverRes.data.drivers || []);
