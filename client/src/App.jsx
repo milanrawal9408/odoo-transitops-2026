@@ -1,5 +1,9 @@
 function App() {
-  return <h1>TransitOps</h1>;
+  return (
+    <div className="bg-red-500 text-white text-5xl h-screen flex items-center justify-center">
+      Tailwind Working
+    </div>
+  );
 }
 
 export default App;
