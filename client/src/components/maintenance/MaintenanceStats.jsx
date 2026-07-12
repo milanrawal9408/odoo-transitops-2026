@@ -1,9 +1,9 @@
-import { FaWrench, FaClock, FaSpinner, FaDollarSign } from "react-icons/fa";
+import { FaWrench, FaClock, FaCheckCircle, FaDollarSign } from "react-icons/fa";
 
 function MaintenanceStats({ records }) {
   const total = records.length;
   const pending = records.filter((r) => r.status === "Pending").length;
-  const inProgress = records.filter((r) => r.status === "In Progress").length;
+  const completed = records.filter((r) => r.status === "Completed").length;
   const totalCost = records.reduce((sum, r) => sum + (r.cost || 0), 0);
 
   const stats = [
@@ -22,9 +22,9 @@ function MaintenanceStats({ records }) {
       shadow: "shadow-amber-500/25",
     },
     {
-      label: "In Progress",
-      value: inProgress,
-      icon: <FaSpinner className={inProgress > 0 ? "animate-spin" : ""} />,
+      label: "Completed",
+      value: completed,
+      icon: <FaCheckCircle />,
       gradient: "from-blue-500 to-blue-700",
       shadow: "shadow-blue-500/25",
     },
