@@ -28,7 +28,7 @@ function Navbar() {
 
             <div>
 
-                Milan
+
 
             </div>
 

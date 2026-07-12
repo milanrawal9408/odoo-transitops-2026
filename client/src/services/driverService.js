@@ -1,10 +1,20 @@
-import axios from "axios";
+import API from "./api";
 
-const API = axios.create({
-  baseURL: "http://localhost:5000/api/auth",
-  withCredentials: true,
-});
+export const getDrivers = () =>
+  API.get("/drivers");
 
-export const getDrivers = () => API.get("/drivers");
+export const getDriverById = (id) =>
+  API.get(`/drivers/${id}`);
 
-export default API;
+export const createDriver = (data) =>
+  API.post("/drivers", data);
+
+export const updateDriver = (id, data) =>
+  API.put(`/drivers/${id}`, data);
+
+export const deleteDriver = (id) =>
+  API.delete(`/drivers/${id}`);
+
+// Fetch User-role users without an existing Driver profile (for form dropdown)
+export const getDriverUsers = () =>
+  API.get("/drivers/driver-users");
