@@ -2,10 +2,10 @@ import { useState } from "react";
 import { FaEdit, FaTrash, FaUserTie, FaSearch } from "react-icons/fa";
 
 const STATUS_CONFIG = {
-  Available:  { bg: "rgba(34,197,94,0.12)",  color: "#22C55E", dot: "#22C55E"  },
-  "On Trip":  { bg: "rgba(99,102,241,0.12)", color: "#818CF8", dot: "#818CF8"  },
-  Inactive:   { bg: "rgba(148,163,184,0.1)", color: "#94A3B8", dot: "#94A3B8"  },
-  Suspended:  { bg: "rgba(239,68,68,0.12)",  color: "#EF4444", dot: "#EF4444"  },
+  Available:  { bg: "bg-emerald-50", text: "text-emerald-700", border: "border-emerald-200" },
+  "On Trip":  { bg: "bg-blue-50", text: "text-blue-700", border: "border-blue-200" },
+  Inactive:   { bg: "bg-slate-50", text: "text-slate-600", border: "border-slate-200" },
+  Suspended:  { bg: "bg-red-50", text: "text-red-700", border: "border-red-200" },
 };
 
 const formatDate = (dateStr) => {
@@ -28,8 +28,8 @@ function DriverTable({ drivers, loading, onEdit, onDelete }) {
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center py-20" style={{ color: "#475569" }}>
-        <svg className="animate-spin w-8 h-8 mb-3" style={{ color: "#6366F1" }} viewBox="0 0 24 24" fill="none">
+      <div className="flex flex-col items-center justify-center py-20 text-slate-400">
+        <svg className="animate-spin w-8 h-8 mb-3 text-blue-500" viewBox="0 0 24 24" fill="none">
           <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
           <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
         </svg>
@@ -52,98 +52,62 @@ function DriverTable({ drivers, loading, onEdit, onDelete }) {
   });
 
   return (
-    <div>
+    <div className="space-y-4">
       {/* Search + Filter Bar */}
-      <div
-        className="flex flex-wrap items-center gap-3 mb-5 p-4 rounded-xl"
-        style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)" }}
-      >
-        <div className="relative flex-1 min-w-[200px]">
-          <FaSearch
-            className="absolute left-3 top-1/2 -translate-y-1/2"
-            style={{ color: "#475569", fontSize: "13px" }}
-          />
+      <div className="bg-white rounded-2xl p-4 shadow-sm border border-slate-100 flex flex-col sm:flex-row gap-3 items-center">
+        {/* Search */}
+        <div className="relative flex-1 w-full">
+          <FaSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm" />
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search by name, email, or license..."
-            className="w-full py-2 pl-9 pr-4 rounded-lg text-sm outline-none"
-            style={{
-              background: "rgba(255,255,255,0.05)",
-              border: "1px solid rgba(255,255,255,0.08)",
-              color: "#E2E8F0",
-              transition: "border-color 0.2s",
-            }}
-            onFocus={(e) => (e.target.style.borderColor = "#6366F1")}
-            onBlur={(e) => (e.target.style.borderColor = "rgba(255,255,255,0.08)")}
+            placeholder="Search by driver name, email, or license..."
+            className="w-full pl-10 pr-4 py-2.5 text-sm border border-slate-200 rounded-xl outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all duration-200"
           />
         </div>
 
+        {/* Status Filter */}
         <select
           value={filterStatus}
           onChange={(e) => setFilterStatus(e.target.value)}
-          className="py-2 px-3 rounded-lg text-sm outline-none"
-          style={{
-            background: "rgba(255,255,255,0.05)",
-            border: "1px solid rgba(255,255,255,0.08)",
-            color: filterStatus ? "#E2E8F0" : "#475569",
-          }}
+          className="w-full sm:w-auto px-4 py-2.5 text-sm border border-slate-200 rounded-xl outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 bg-white text-slate-600 transition-all cursor-pointer"
         >
           <option value="">All Statuses</option>
           {["Available", "On Trip", "Inactive", "Suspended"].map((s) => (
-            <option key={s} value={s} style={{ background: "#1E293B", color: "#E2E8F0" }}>
+            <option key={s} value={s}>
               {s}
             </option>
           ))}
         </select>
 
-        <span className="text-xs ml-auto" style={{ color: "#475569" }}>
+        <span className="text-xs text-slate-500 whitespace-nowrap sm:ml-2">
           {filtered.length} of {drivers?.length || 0} drivers
         </span>
       </div>
 
       {/* Empty State */}
       {filtered.length === 0 ? (
-        <div
-          className="flex flex-col items-center justify-center py-20 rounded-xl"
-          style={{ background: "rgba(255,255,255,0.02)", border: "1px dashed rgba(255,255,255,0.08)" }}
-        >
-          <div
-            className="w-16 h-16 rounded-2xl flex items-center justify-center mb-4"
-            style={{ background: "rgba(99,102,241,0.1)" }}
-          >
-            <FaUserTie className="text-3xl" style={{ color: "#6366F1", opacity: 0.5 }} />
-          </div>
-          <p className="font-semibold text-sm mb-1" style={{ color: "#CBD5E1" }}>
-            {search || filterStatus ? "No matching drivers found" : "No drivers registered yet"}
-          </p>
-          <p className="text-xs" style={{ color: "#475569" }}>
-            {search || filterStatus
-              ? "Try adjusting your filters"
-              : "Click '+ Add Driver' to register your first driver"}
+        <div className="bg-white rounded-2xl border border-slate-100 p-20 flex flex-col items-center justify-center text-center text-slate-400">
+          <FaUserTie className="text-5xl mb-4 text-slate-300" />
+          <p className="text-lg font-semibold text-slate-500">No drivers found</p>
+          <p className="text-sm mt-1">
+            {drivers.length === 0
+              ? 'Click "Add Driver" to register your first driver'
+              : "Try adjusting your filters"}
           </p>
         </div>
       ) : (
-        <div
-          className="rounded-xl overflow-hidden"
-          style={{ border: "1px solid rgba(255,255,255,0.06)" }}
-        >
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+            <table className="w-full">
               <thead>
-                <tr
-                  style={{
-                    background: "rgba(255,255,255,0.04)",
-                    borderBottom: "1px solid rgba(255,255,255,0.06)",
-                  }}
-                >
+                <tr className="bg-slate-50 border-b border-slate-100">
                   {["Driver", "License", "Experience", "License Expiry", "Contact", "Status", "Actions"].map(
                     (h) => (
                       <th
                         key={h}
-                        className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider"
-                        style={{ color: "#64748B" }}
+                        className="text-left px-6 py-4 text-xs font-bold text-slate-500 uppercase tracking-wider"
                       >
                         {h}
                       </th>
@@ -151,8 +115,8 @@ function DriverTable({ drivers, loading, onEdit, onDelete }) {
                   )}
                 </tr>
               </thead>
-              <tbody>
-                {filtered.map((driver, idx) => {
+              <tbody className="divide-y divide-slate-50">
+                {filtered.map((driver) => {
                   const statusCfg = STATUS_CONFIG[driver.status] || STATUS_CONFIG["Available"];
                   const licExpired = isExpired(driver.licenseExpiry);
                   const licSoon = isExpiringSoon(driver.licenseExpiry);
@@ -160,31 +124,20 @@ function DriverTable({ drivers, loading, onEdit, onDelete }) {
                   return (
                     <tr
                       key={driver._id}
-                      style={{
-                        borderBottom: idx < filtered.length - 1 ? "1px solid rgba(255,255,255,0.04)" : "none",
-                        transition: "background 0.15s",
-                      }}
-                      onMouseEnter={(e) => (e.currentTarget.style.background = "rgba(255,255,255,0.03)")}
-                      onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+                      className="hover:bg-blue-50/40 transition-colors duration-150"
                     >
                       {/* Driver Info */}
-                      <td className="px-4 py-3">
+                      <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
                           {/* Avatar */}
-                          <div
-                            className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 font-semibold text-sm"
-                            style={{
-                              background: "rgba(99,102,241,0.15)",
-                              color: "#818CF8",
-                            }}
-                          >
+                          <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-500 flex items-center justify-center font-bold text-sm">
                             {driver.user?.fullName?.[0]?.toUpperCase() || "?"}
                           </div>
                           <div>
-                            <p className="font-semibold" style={{ color: "#E2E8F0" }}>
+                            <p className="font-semibold text-slate-800 text-sm">
                               {driver.user?.fullName || "—"}
                             </p>
-                            <p className="text-xs" style={{ color: "#475569" }}>
+                            <p className="text-xs text-slate-400">
                               {driver.user?.email || "—"}
                             </p>
                           </div>
@@ -192,84 +145,69 @@ function DriverTable({ drivers, loading, onEdit, onDelete }) {
                       </td>
 
                       {/* License */}
-                      <td className="px-4 py-3">
-                        <span className="font-mono text-xs font-semibold" style={{ color: "#94A3B8" }}>
+                      <td className="px-6 py-4">
+                        <span className="font-mono text-xs font-semibold text-slate-600">
                           {driver.licenseNumber}
                         </span>
                       </td>
 
                       {/* Experience */}
-                      <td className="px-4 py-3">
-                        <span style={{ color: "#94A3B8" }}>
-                          {driver.experience ?? 0} yr{driver.experience !== 1 ? "s" : ""}
-                        </span>
+                      <td className="px-6 py-4 text-sm text-slate-600">
+                        {driver.experience ?? 0} yr{driver.experience !== 1 ? "s" : ""}
                       </td>
 
                       {/* License Expiry */}
-                      <td className="px-4 py-3">
+                      <td className="px-6 py-4">
                         {licExpired ? (
-                          <span
-                            className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs"
-                            style={{ background: "rgba(239,68,68,0.1)", color: "#EF4444" }}
-                          >
+                          <span className="inline-flex items-center px-2.5 py-0.5 text-xs font-semibold rounded border bg-red-50 text-red-700 border-red-200">
                             ✕ Expired {formatDate(driver.licenseExpiry)}
                           </span>
                         ) : licSoon ? (
-                          <span
-                            className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs"
-                            style={{ background: "rgba(234,179,8,0.1)", color: "#EAB308" }}
-                          >
-                            ⚠ {formatDate(driver.licenseExpiry)}
+                          <span className="inline-flex items-center px-2.5 py-0.5 text-xs font-semibold rounded border bg-amber-50 text-amber-700 border-amber-200">
+                            ⚠ Expiring: {formatDate(driver.licenseExpiry)}
                           </span>
                         ) : (
-                          <span className="text-xs" style={{ color: "#22C55E" }}>
+                          <span className="inline-flex items-center px-2.5 py-0.5 text-xs font-semibold rounded border bg-emerald-50 text-emerald-700 border-emerald-200">
                             ✓ {formatDate(driver.licenseExpiry)}
                           </span>
                         )}
                       </td>
 
                       {/* Contact */}
-                      <td className="px-4 py-3">
-                        <p className="text-xs" style={{ color: "#94A3B8" }}>
-                          {driver.user?.phone || "—"}
-                        </p>
+                      <td className="px-6 py-4">
+                        <p className="text-sm text-slate-700">{driver.user?.phone || "—"}</p>
                         {driver.emergencyContactPhone && (
-                          <p className="text-xs mt-0.5" style={{ color: "#475569" }}>
-                            Emergency: {driver.emergencyContactPhone}
+                          <p className="text-[10px] text-slate-400">
+                            Emerg: {driver.emergencyContactPhone} ({driver.emergencyContactName})
                           </p>
                         )}
                       </td>
 
                       {/* Status */}
-                      <td className="px-4 py-3">
-                        <span
-                          className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium"
-                          style={{ background: statusCfg.bg, color: statusCfg.color }}
-                        >
-                          <span className="w-1.5 h-1.5 rounded-full" style={{ background: statusCfg.dot }} />
+                      <td className="px-6 py-4">
+                        <span className={`inline-flex items-center gap-1.5 px-3 py-1 text-xs font-semibold rounded-full border ${statusCfg.bg} ${statusCfg.text} ${statusCfg.border}`}>
+                          <span className="w-1.5 h-1.5 rounded-full bg-current" />
                           {driver.status}
                         </span>
                       </td>
 
                       {/* Actions */}
-                      <td className="px-4 py-3">
+                      <td className="px-6 py-4">
                         <div className="flex items-center gap-2">
-                          <ActionButton
+                          <button
                             onClick={() => onEdit(driver)}
-                            color="#818CF8"
-                            hoverBg="rgba(99,102,241,0.15)"
-                            title="Edit driver"
+                            className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all duration-200 cursor-pointer"
+                            title="Edit Driver"
                           >
-                            <FaEdit />
-                          </ActionButton>
-                          <ActionButton
+                            <FaEdit className="text-sm" />
+                          </button>
+                          <button
                             onClick={() => onDelete(driver)}
-                            color="#EF4444"
-                            hoverBg="rgba(239,68,68,0.15)"
-                            title="Delete driver"
+                            className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all duration-200 cursor-pointer"
+                            title="Delete Driver"
                           >
-                            <FaTrash />
-                          </ActionButton>
+                            <FaTrash className="text-sm" />
+                          </button>
                         </div>
                       </td>
                     </tr>
@@ -281,27 +219,6 @@ function DriverTable({ drivers, loading, onEdit, onDelete }) {
         </div>
       )}
     </div>
-  );
-}
-
-function ActionButton({ onClick, color, hoverBg, title, children }) {
-  return (
-    <button
-      onClick={onClick}
-      title={title}
-      className="w-8 h-8 rounded-lg flex items-center justify-center transition-all text-sm"
-      style={{ background: "rgba(255,255,255,0.05)", color: "#64748B" }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.background = hoverBg;
-        e.currentTarget.style.color = color;
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.background = "rgba(255,255,255,0.05)";
-        e.currentTarget.style.color = "#64748B";
-      }}
-    >
-      {children}
-    </button>
   );
 }
 

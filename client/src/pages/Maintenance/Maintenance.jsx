@@ -8,7 +8,7 @@ import MaintenanceFilters from "../../components/maintenance/MaintenanceFilters"
 import MaintenanceTable from "../../components/maintenance/MaintenanceTable";
 import MaintenanceFormModal from "../../components/maintenance/MaintenanceFormModal";
 import MaintenanceViewModal from "../../components/maintenance/MaintenanceViewModal";
-import DeleteConfirmModal from "../../components/maintenance/DeleteConfirmModal";
+import DeleteModal from "../../components/common/DeleteModal";
 
 import {
   getAllMaintenances,
@@ -18,8 +18,6 @@ import {
   deleteMaintenance,
 } from "../../services/maintenanceService";
 import { getVehicles } from "../../services/vehicleService";
-
-import "./maintenance.css";
 
 function Maintenance() {
   const navigate = useNavigate();
@@ -37,9 +35,16 @@ function Maintenance() {
   // ── Modal State ──
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [editingRecord, setEditingRecord] = useState(null);
   const [selectedRecord, setSelectedRecord] = useState(null);
+
+  // ── Delete Modal State ──
+  const [deleteModal, setDeleteModal] = useState({
+    isOpen: false,
+    recordId: null,
+    vehicleNumber: "",
+  });
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   // ── Handle 401 (not logged in) ──
   const handleAuthError = useCallback(
@@ -59,13 +64,13 @@ function Maintenance() {
     try {
       setLoading(true);
 
-      // Fetch maintenance and vehicles independently so one failure doesn't block the other
       let maintenanceData = [];
       let vehicleData = [];
 
       try {
         const maintRes = await getAllMaintenances();
-        maintenanceData = maintRes.data.maintenances || [];
+        // Backend returns plural "maintenances" in our updated controller
+        maintenanceData = maintRes.data.maintenances || maintRes.data.maintenance || [];
       } catch (error) {
         if (handleAuthError(error)) return;
         toast.error(
@@ -78,7 +83,6 @@ function Maintenance() {
         vehicleData = vehicleRes.data.vehicles || [];
       } catch (error) {
         if (handleAuthError(error)) return;
-        // Vehicle fetch failure is non-critical, just log it
         console.warn("Could not load vehicles for dropdown:", error.message);
       }
 
@@ -127,9 +131,10 @@ function Maintenance() {
 
   // ── Handlers ──
   const handleOpenCreate = () => {
-    setEditingRecord(null);
-    setIsFormModalOpen(true);
-  };
+  console.log("OPEN BUTTON CLICKED");
+  setEditingRecord(null);
+  setIsFormModalOpen(true);
+};
 
   const handleOpenEdit = (record) => {
     setEditingRecord(record);
@@ -142,14 +147,16 @@ function Maintenance() {
   };
 
   const handleOpenDelete = (record) => {
-    setSelectedRecord(record);
-    setIsDeleteModalOpen(true);
+    setDeleteModal({
+      isOpen: true,
+      recordId: record._id,
+      vehicleNumber: record.vehicle?.vehicleNumber || "this vehicle",
+    });
   };
 
   const handleCloseModals = () => {
     setIsFormModalOpen(false);
     setIsViewModalOpen(false);
-    setIsDeleteModalOpen(false);
     setEditingRecord(null);
     setSelectedRecord(null);
   };
@@ -187,43 +194,49 @@ function Maintenance() {
   };
 
   const handleDeleteConfirm = async () => {
+    setDeleteLoading(true);
     try {
-      await deleteMaintenance(selectedRecord._id);
+      await deleteMaintenance(deleteModal.recordId);
       toast.success("Maintenance record deleted successfully");
-      handleCloseModals();
+      setDeleteModal({ isOpen: false, recordId: null, vehicleNumber: "" });
       fetchData();
     } catch (error) {
       if (handleAuthError(error)) return;
       toast.error(
         error.response?.data?.message || "Failed to delete maintenance record"
       );
+    } finally {
+      setDeleteLoading(false);
     }
   };
 
-  // ── Render ──
   if (loading) {
     return (
-      <div className="maint-loading">
-        <div className="maint-loading-spinner" />
-        <span>Loading maintenance records...</span>
+      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+        <div className="flex flex-col items-center gap-3">
+          <svg className="animate-spin w-8 h-8 text-blue-500" viewBox="0 0 24 24" fill="none">
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+          </svg>
+          <span className="text-slate-500 text-sm font-medium">Loading maintenance records...</span>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="maint-page">
+    <div className="space-y-6">
       {/* Page Header */}
-      <div className="maint-page-header">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1>🔧 Maintenance Management</h1>
-          <p>Track, schedule, and manage all vehicle maintenance records</p>
+          <h1 className="text-2xl font-bold text-slate-800">Maintenance Management</h1>
+          <p className="text-sm text-slate-500 mt-1">Track, schedule, and manage all vehicle maintenance records</p>
         </div>
         <button
-          id="maintenance-add-btn"
-          className="maint-add-btn"
           onClick={handleOpenCreate}
+          className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-blue-600 rounded-xl hover:bg-blue-700 transition-all duration-200 cursor-pointer shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 hover:-translate-y-0.5"
         >
-          <FaPlus />
+          <FaPlus className="text-xs" />
           Add Maintenance
         </button>
       </div>
@@ -265,11 +278,13 @@ function Maintenance() {
         record={selectedRecord}
       />
 
-      <DeleteConfirmModal
-        isOpen={isDeleteModalOpen}
-        onClose={handleCloseModals}
+      <DeleteModal
+        isOpen={deleteModal.isOpen}
+        onClose={() => setDeleteModal({ isOpen: false, recordId: null, vehicleNumber: "" })}
         onConfirm={handleDeleteConfirm}
-        record={selectedRecord}
+        title="Delete Maintenance Record"
+        message={`Are you sure you want to delete the maintenance record for vehicle ${deleteModal.vehicleNumber}? This action cannot be undone.`}
+        isLoading={deleteLoading}
       />
     </div>
   );
