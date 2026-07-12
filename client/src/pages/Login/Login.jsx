@@ -1,6 +1,32 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import toast from "react-hot-toast";
+import { loginUser } from "../../services/authService";
 
 function Login() {
+
+   const navigate = useNavigate();
+
+    const {
+        register,
+        handleSubmit,
+        formState: { errors },
+    } = useForm();
+
+    const onSubmit = async (data) => {
+        try {
+            const res = await loginUser(data);
+
+            toast.success(res.data.message);
+
+            navigate("/dashboard");
+        } catch (error) {
+            toast.error(
+                error.response?.data?.message || "Login Failed"
+            );
+        }
+    };
+
   return (
     <div className="min-h-screen flex">
 
@@ -32,25 +58,44 @@ function Login() {
             Welcome Back
           </h2>
 
-          <form className="mt-8 space-y-5">
+          <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-5">
 
             <input
               type="email"
               placeholder="Email Address"
               className="w-full border rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500"
+              {...register("email", {
+                required: "Email is required",
+              })}
             />
+
+            {errors.email && (
+              <p className="text-red-500 text-sm">
+                {errors.email.message}
+              </p>
+            )}
 
             <input
-              type="password"
-              placeholder="Password"
-              className="w-full border rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500"
-            />
+            type="password"
+            placeholder="Password"
+            className="w-full border rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500"
+            {...register("password", {
+              required: "Password is required",
+            })}
+          />
 
-            <button
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-lg p-3 transition"
-            >
-              Login
-            </button>
+          {errors.password && (
+            <p className="text-red-500 text-sm">
+              {errors.password.message}
+            </p>
+          )}
+
+           <button
+            type="submit"
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-lg p-3 transition"
+          >
+            Login
+          </button>
 
           </form>
 
