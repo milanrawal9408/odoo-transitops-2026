@@ -34,7 +34,10 @@ const isExpired = (dateStr) => {
   return new Date(dateStr) < new Date();
 };
 
+import { useAuth } from "../../context/AuthContext";
+
 function VehicleTable({ vehicles, loading, onEdit, onDelete }) {
+  const { user } = useAuth();
   const [search, setSearch] = useState("");
   const [filterType, setFilterType] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
@@ -246,20 +249,24 @@ function VehicleTable({ vehicles, loading, onEdit, onDelete }) {
                       {/* Actions */}
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-2">
-                          <button
-                            onClick={() => onEdit(vehicle)}
-                            className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all duration-200 cursor-pointer"
-                            title="Edit Vehicle"
-                          >
-                            <FaEdit className="text-sm" />
-                          </button>
-                          <button
-                            onClick={() => onDelete(vehicle)}
-                            className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all duration-200 cursor-pointer"
-                            title="Delete Vehicle"
-                          >
-                            <FaTrash className="text-sm" />
-                          </button>
+                          {["Admin", "Fleet Manager", "Safety Officer"].includes(user?.role) && (
+                            <button
+                              onClick={() => onEdit(vehicle)}
+                              className="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all duration-200 cursor-pointer"
+                              title="Edit Vehicle"
+                            >
+                              <FaEdit className="text-sm" />
+                            </button>
+                          )}
+                          {["Admin"].includes(user?.role) && (
+                            <button
+                              onClick={() => onDelete(vehicle)}
+                              className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all duration-200 cursor-pointer"
+                              title="Delete Vehicle"
+                            >
+                              <FaTrash className="text-sm" />
+                            </button>
+                          )}
                         </div>
                       </td>
                     </tr>

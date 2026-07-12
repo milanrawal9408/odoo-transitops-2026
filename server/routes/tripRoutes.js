@@ -19,9 +19,9 @@ router.post(
   createTrip
 );
 
-router.get("/", protect, getTrips);
+router.get("/", protect, authorize("Admin", "Fleet Manager", "Driver"), getTrips);
 
-router.get("/:id", protect, getTripById);
+router.get("/:id", protect, authorize("Admin", "Fleet Manager", "Driver"), getTripById);
 
 router.put(
   "/:id",
@@ -37,4 +37,4 @@ router.delete(
   deleteTrip
 );
 
-export default router;
+export default router;

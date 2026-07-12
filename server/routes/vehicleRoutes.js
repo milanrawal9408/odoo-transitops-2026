@@ -15,18 +15,18 @@ const router = express.Router();
 router.post(
   "/",
   protect,
-  authorize("Admin", "Fleet Manager"),
+  authorize("Admin", "Fleet Manager", "Safety Officer"),
   createVehicle
 );
 
-router.get("/", protect, getVehicles);
+router.get("/", protect, authorize("Admin", "Fleet Manager", "Safety Officer", "Driver"), getVehicles);
 
-router.get("/:id", protect, getVehicleById);
+router.get("/:id", protect, authorize("Admin", "Fleet Manager", "Safety Officer", "Driver"), getVehicleById);
 
 router.put(
   "/:id",
   protect,
-  authorize("Admin", "Fleet Manager"),
+  authorize("Admin", "Fleet Manager", "Safety Officer"),
   updateVehicle
 );
 
@@ -37,4 +37,4 @@ router.delete(
   deleteVehicle
 );
 
-export default router;
+export default router;

@@ -1,38 +1,16 @@
-import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import toast from "react-hot-toast";
 import { FaTruck, FaSignOutAlt, FaUser, FaSpinner } from "react-icons/fa";
-import { getCurrentUser, logoutUser } from "../../services/authService";
+import { useAuth } from "../../context/AuthContext";
 
 function Navbar() {
   const navigate = useNavigate();
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        setLoading(true);
-        const res = await getCurrentUser();
-        setUser(res.data.user || null);
-      } catch (err) {
-        console.error("Failed to load authenticated user:", err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchUser();
-  }, []);
+  const { user, loading, logout } = useAuth();
 
   const handleLogout = async () => {
-    try {
-      await logoutUser();
-      toast.success("Logged out successfully");
-      navigate("/login");
-    } catch (err) {
-      toast.error(err.response?.data?.message || "Failed to log out");
-    }
+    await logout();
+    navigate("/login");
   };
+
 
   return (
     <nav className="h-16 border-b border-slate-100 bg-white px-6 flex items-center justify-between shrink-0 shadow-sm z-10">

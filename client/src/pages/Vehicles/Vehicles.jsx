@@ -6,8 +6,10 @@ import { getVehicles, deleteVehicle } from "../../services/vehicleService";
 import VehicleTable from "../../components/vehicle/VehicleTable";
 import VehicleForm from "../../components/vehicle/VehicleForm";
 import DeleteModal from "../../components/common/DeleteModal";
+import { useAuth } from "../../context/AuthContext";
 
 function Vehicles() {
+  const { user } = useAuth();
   const [vehicles, setVehicles] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -131,13 +133,15 @@ function Vehicles() {
             Manage and monitor all vehicles in your fleet
           </p>
         </div>
-        <button
-          onClick={handleAddVehicle}
-          className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-blue-600 rounded-xl hover:bg-blue-700 transition-all duration-200 cursor-pointer shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 hover:-translate-y-0.5"
-        >
-          <FaPlus className="text-xs" />
-          Add Vehicle
-        </button>
+        {["Admin", "Fleet Manager", "Safety Officer"].includes(user?.role) && (
+          <button
+            onClick={handleAddVehicle}
+            className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-blue-600 rounded-xl hover:bg-blue-700 transition-all duration-200 cursor-pointer shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 hover:-translate-y-0.5"
+          >
+            <FaPlus className="text-xs" />
+            Add Vehicle
+          </button>
+        )}
       </div>
 
       {/* Stats Cards */}
