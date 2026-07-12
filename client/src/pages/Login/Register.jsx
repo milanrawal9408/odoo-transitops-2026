@@ -28,45 +28,58 @@ function Register() {
             Create Account
           </h2>
 
-          <form className="space-y-5">
+        <form className="mt-8 space-y-5">
 
             <input
-              placeholder="Full Name"
-              className="w-full border rounded-lg px-4 py-3"
+                type="text"
+                placeholder="Full Name"
+                className="w-full border rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500"
             />
 
             <input
-              type="email"
-              placeholder="Email"
-              className="w-full border rounded-lg px-4 py-3"
+                type="email"
+                placeholder="Email Address"
+                className="w-full border rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500"
             />
 
             <input
-              type="password"
-              placeholder="Password"
-              className="w-full border rounded-lg px-4 py-3"
+                type="tel"
+                placeholder="Phone Number"
+                className="w-full border rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500"
+            />
+
+            <input
+                type="password"
+                placeholder="Password"
+                className="w-full border rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500"
+            />
+
+            <input
+                type="password"
+                placeholder="Confirm Password"
+                className="w-full border rounded-lg p-3 outline-none focus:ring-2 focus:ring-blue-500"
             />
 
             <button
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg"
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white rounded-lg p-3 transition"
             >
-              Register
+                Create Account
             </button>
 
-          </form>
+        </form>
 
-          <p className="mt-6 text-center">
+          <p className="mt-6 text-center text-gray-600">
 
-            Already have an account?
+                Already have an account?
 
-            <Link
-              to="/login"
-              className="text-blue-600 ml-2"
-            >
-              Login
-            </Link>
+                <Link
+                    to="/login"
+                    className="text-blue-600 font-semibold ml-2 hover:underline"
+                >
+                    Login
+                </Link>
 
-          </p>
+            </p>
 
         </div>
 
