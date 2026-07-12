@@ -8,6 +8,7 @@ import driverRoutes from "./routes/driverRoutes.js";
 import tripRoutes from "./routes/tripRoutes.js";
 import maintenanceRoutes from "./routes/maintenanceRoutes.js";
 import aiRoutes from "./routes/aiRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
 
 import connectDB from "./config/db.js";
 
@@ -40,6 +41,7 @@ app.use("/api/drivers", driverRoutes);
 app.use("/api/trips", tripRoutes);
 app.use("/api/maintenance", maintenanceRoutes);
 app.use("/api/ai", aiRoutes);
+app.use("/api/users", userRoutes);
 
 const PORT = process.env.PORT || 5000;
 

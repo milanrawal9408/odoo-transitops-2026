@@ -11,6 +11,7 @@ import {
   FaRobot,
   FaUser,
   FaSpinner,
+  FaUsersCog,
 } from "react-icons/fa";
 
 function Sidebar() {
@@ -22,6 +23,12 @@ function Sidebar() {
       path: "/dashboard",
       icon: <FaTachometerAlt />,
       roles: ["Admin", "Fleet Manager", "Driver", "Safety Officer", "Financial Analyst"],
+    },
+    {
+      name: "User Management",
+      path: "/users",
+      icon: <FaUsersCog />,
+      roles: ["Admin"],
     },
     {
       name: "Vehicles",

@@ -14,6 +14,7 @@ import Maintenance from "../pages/Maintenance/Maintenance";
 import Reports from "../pages/Reports/Reports";
 import AIAssistant from "../pages/AIAssistant/AIAssistant";
 import Profile from "../pages/Profile/Profile";
+import Users from "../pages/Users/Users";
 
 import DashboardLayout from "../layouts/DashboardLayout";
 import ProtectedRoute from "../components/common/ProtectedRoute";
@@ -74,6 +75,11 @@ function AppRoutes() {
           {/* AI Fleet Assistant (Admin, Fleet Manager) */}
           <Route element={<ProtectedRoute allowedRoles={["Admin", "Fleet Manager"]} />}>
             <Route path="/ai-assistant" element={<AIAssistant />} />
+          </Route>
+
+          {/* User & Access Management (Admin only) */}
+          <Route element={<ProtectedRoute allowedRoles={["Admin"]} />}>
+            <Route path="/users" element={<Users />} />
           </Route>
         </Route>
       </Route>
