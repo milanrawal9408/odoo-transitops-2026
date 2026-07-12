@@ -17,6 +17,7 @@ import Fuel from "../pages/Fuel/Fuel";
 import Reports from "../pages/Reports/Reports";
 import AIAssistant from "../pages/AIAssistant/AIAssistant";
 import Profile from "../pages/Profile/Profile";
+import Users from "../pages/Users/Users";
 import UserRoles from "../pages/UserRoles/UserRoles";
 
 import DashboardLayout from "../layouts/DashboardLayout";
@@ -80,10 +81,11 @@ function AppRoutes() {
             <Route path="/ai-assistant" element={<AIAssistant />} />
           </Route>
 
-          {/* User Management / Roles (Admin Only) */}
-          <Route element={<ProtectedRoute allowedRoles={["Admin"]} />}>
-            <Route path="/user-roles" element={<UserRoles />} />
-          </Route>
+          {/* Admin Only */}
+<Route element={<ProtectedRoute allowedRoles={["Admin"]} />}>
+  <Route path="/users" element={<Users />} />
+  <Route path="/user-roles" element={<UserRoles />} />
+</Route>
         </Route>
       </Route>
     </Routes>

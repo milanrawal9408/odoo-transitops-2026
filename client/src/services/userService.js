@@ -1,11 +1,25 @@
 import API from "./api";
 
-export const getUsers = () => API.get("/users");
+export const getUsers = (params) =>
+  API.get("/users", { params });
 
-export const getUserById = (id) => API.get(`/users/${id}`);
+export const getUserById = (id) =>
+  API.get(`/users/${id}`);
 
-export const updateUserRole = (id, role) => API.put(`/users/${id}/role`, { role });
+export const createUser = (data) =>
+  API.post("/users", data);
 
-export const updateUserStatus = (id, status) => API.put(`/users/${id}/status`, { status });
+export const updateUser = (id, data) =>
+  API.put(`/users/${id}`, data);
 
-export const deleteUser = (id) => API.delete(`/users/${id}`);
+export const updateUserRole = (id, role) =>
+  API.patch(`/users/${id}/role`, { role });
+
+export const updateUserStatus = (id, status) =>
+  API.patch(`/users/${id}/status`, { status });
+
+export const deleteUser = (id) =>
+  API.delete(`/users/${id}`);
+
+export const getUserActivities = () =>
+  API.get("/users/activities/log");
