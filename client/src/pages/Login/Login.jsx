@@ -2,10 +2,12 @@ import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { loginUser } from "../../services/authService";
+import { useAuth } from "../../context/AuthContext";
 
 function Login() {
 
    const navigate = useNavigate();
+   const { refreshUser } = useAuth();
 
     const {
         register,
@@ -18,6 +20,7 @@ function Login() {
             const res = await loginUser(data);
 
             toast.success(res.data.message);
+            await refreshUser();
 
             navigate("/dashboard");
         } catch (error) {
