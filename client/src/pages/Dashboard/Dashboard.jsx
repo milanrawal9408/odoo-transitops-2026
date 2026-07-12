@@ -28,6 +28,7 @@ import { getVehicles } from "../../services/vehicleService";
 import { getDrivers } from "../../services/driverService";
 import { getTrips } from "../../services/tripService";
 import { getAllMaintenances } from "../../services/maintenanceService";
+import { useAuth } from "../../context/AuthContext";
 
 const PIE_COLORS = ["#3B82F6", "#10B981", "#F59E0B", "#EF4444"];
 const TRIP_STATUS_COLORS = {
@@ -45,6 +46,7 @@ const TRIP_STATUS_CLASSES = {
 };
 
 function Dashboard() {
+  const { user } = useAuth();
   const [loading, setLoading] = useState(true);
   const [data, setData] = useState({
     vehicles: [],
@@ -60,18 +62,59 @@ function Dashboard() {
   const fetchDashboardData = async () => {
     try {
       setLoading(true);
-      const [vehiclesRes, driversRes, tripsRes, maintenanceRes] = await Promise.all([
-        getVehicles(),
-        getDrivers(),
-        getTrips(),
-        getAllMaintenances(),
-      ]);
+      const role = user?.role || "Driver";
+      let vehiclesData = [];
+      let driversData = [];
+      let tripsData = [];
+      let maintenancesData = [];
+
+      const promises = [];
+
+      // Vehicles (Admin, Fleet Manager, Safety Officer, Driver)
+      const fetchVehiclesPromise = getVehicles()
+        .then((res) => {
+          vehiclesData = res.data.vehicles || [];
+        })
+        .catch((err) => console.warn("Failed to fetch vehicles:", err.message));
+      promises.push(fetchVehiclesPromise);
+
+      // Drivers (Admin, Fleet Manager)
+      if (["Admin", "Fleet Manager"].includes(role)) {
+        const fetchDriversPromise = getDrivers()
+          .then((res) => {
+            driversData = res.data.drivers || [];
+          })
+          .catch((err) => console.warn("Failed to fetch drivers:", err.message));
+        promises.push(fetchDriversPromise);
+      }
+
+      // Trips (Admin, Fleet Manager, Driver)
+      if (["Admin", "Fleet Manager", "Driver"].includes(role)) {
+        const fetchTripsPromise = getTrips()
+          .then((res) => {
+            tripsData = res.data.trips || [];
+          })
+          .catch((err) => console.warn("Failed to fetch trips:", err.message));
+        promises.push(fetchTripsPromise);
+      }
+
+      // Maintenance (Admin, Fleet Manager, Safety Officer)
+      if (["Admin", "Fleet Manager", "Safety Officer"].includes(role)) {
+        const fetchMaintPromise = getAllMaintenances()
+          .then((res) => {
+            maintenancesData = res.data.maintenances || res.data.maintenance || [];
+          })
+          .catch((err) => console.warn("Failed to fetch maintenance records:", err.message));
+        promises.push(fetchMaintPromise);
+      }
+
+      await Promise.all(promises);
 
       setData({
-        vehicles: vehiclesRes.data.vehicles || [],
-        drivers: driversRes.data.drivers || [],
-        trips: tripsRes.data.trips || [],
-        maintenances: maintenanceRes.data.maintenances || maintenanceRes.data.maintenance || [],
+        vehicles: vehiclesData,
+        drivers: driversData,
+        trips: tripsData,
+        maintenances: maintenancesData,
       });
     } catch (error) {
       console.error("Dashboard load error:", error);
@@ -206,23 +249,38 @@ function Dashboard() {
         </Link>
 
         {/* Drivers */}
-        <Link
-          to="/drivers"
-          className="bg-gradient-to-br from-violet-500 to-violet-700 text-white rounded-2xl p-5 shadow-lg shadow-violet-500/10 transition-transform duration-200 hover:-translate-y-0.5"
-        >
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-white/80">Total Drivers</p>
-              <p className="text-3xl font-bold mt-1">{totalDrivers}</p>
+        {["Admin", "Fleet Manager"].includes(user?.role) ? (
+          <Link
+            to="/drivers"
+            className="bg-gradient-to-br from-violet-500 to-violet-700 text-white rounded-2xl p-5 shadow-lg shadow-violet-500/10 transition-transform duration-200 hover:-translate-y-0.5"
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-white/80">Total Drivers</p>
+                <p className="text-3xl font-bold mt-1">{totalDrivers}</p>
+              </div>
+              <div className="text-2xl text-white/40"><FaUserTie /></div>
             </div>
-            <div className="text-2xl text-white/40"><FaUserTie /></div>
+            <div className="flex gap-2 text-xs text-white/70 mt-3 border-t border-white/10 pt-2">
+              <span>{driversAvailable} Avail</span>
+              <span>•</span>
+              <span>{driversOnTrip} Active</span>
+            </div>
+          </Link>
+        ) : (
+          <div className="bg-gradient-to-br from-slate-200 to-slate-300 text-slate-500 rounded-2xl p-5 shadow-sm opacity-60">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-slate-500/80">Total Drivers</p>
+                <p className="text-3xl font-bold mt-1">—</p>
+              </div>
+              <div className="text-2xl text-slate-400/60"><FaUserTie /></div>
+            </div>
+            <div className="flex gap-2 text-xs text-slate-400 mt-3 border-t border-slate-200 pt-2">
+              <span>Restricted access</span>
+            </div>
           </div>
-          <div className="flex gap-2 text-xs text-white/70 mt-3 border-t border-white/10 pt-2">
-            <span>{driversAvailable} Avail</span>
-            <span>•</span>
-            <span>{driversOnTrip} Active</span>
-          </div>
-        </Link>
+        )}
 
         {/* Trips */}
         <Link
@@ -244,23 +302,38 @@ function Dashboard() {
         </Link>
 
         {/* Maintenance */}
-        <Link
-          to="/maintenance"
-          className="bg-gradient-to-br from-amber-500 to-amber-700 text-white rounded-2xl p-5 shadow-lg shadow-amber-500/10 transition-transform duration-200 hover:-translate-y-0.5"
-        >
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-white/80">Maintenance Log</p>
-              <p className="text-3xl font-bold mt-1">{totalMaintenances}</p>
+        {["Admin", "Fleet Manager", "Safety Officer"].includes(user?.role) ? (
+          <Link
+            to="/maintenance"
+            className="bg-gradient-to-br from-amber-500 to-amber-700 text-white rounded-2xl p-5 shadow-lg shadow-amber-500/10 transition-transform duration-200 hover:-translate-y-0.5"
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-white/80">Maintenance Log</p>
+                <p className="text-3xl font-bold mt-1">{totalMaintenances}</p>
+              </div>
+              <div className="text-2xl text-white/40"><FaTools /></div>
             </div>
-            <div className="text-2xl text-white/40"><FaTools /></div>
+            <div className="flex gap-2 text-xs text-white/70 mt-3 border-t border-white/10 pt-2">
+              <span>{activeMaintenances} Pending</span>
+              <span>•</span>
+              <span>{totalMaintenances - activeMaintenances} Done</span>
+            </div>
+          </Link>
+        ) : (
+          <div className="bg-gradient-to-br from-slate-200 to-slate-300 text-slate-500 rounded-2xl p-5 shadow-sm opacity-60">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-slate-500/80">Maintenance Log</p>
+                <p className="text-3xl font-bold mt-1">—</p>
+              </div>
+              <div className="text-2xl text-slate-400/60"><FaTools /></div>
+            </div>
+            <div className="flex gap-2 text-xs text-slate-400 mt-3 border-t border-slate-200 pt-2">
+              <span>Restricted access</span>
+            </div>
           </div>
-          <div className="flex gap-2 text-xs text-white/70 mt-3 border-t border-white/10 pt-2">
-            <span>{activeMaintenances} Pending</span>
-            <span>•</span>
-            <span>{totalMaintenances - activeMaintenances} Done</span>
-          </div>
-        </Link>
+        )}
       </div>
 
       {/* Charts Grid */}
@@ -423,45 +496,60 @@ function Dashboard() {
             <p className="text-xs text-slate-400 mt-0.5">Common shortcuts for fleet management tasks</p>
           </div>
           <div className="flex flex-col gap-3 mt-5">
-            <Link
-              to="/trips/add"
-              className="flex items-center justify-between p-3 px-4 rounded-xl text-sm font-semibold text-white transition-all bg-blue-600 hover:bg-blue-700 shadow-md shadow-blue-500/10 hover:shadow-blue-500/20"
-            >
-              <span className="flex items-center gap-3">
-                <FaRoute /> Create New Trip
-              </span>
-              <FaPlus className="text-xs" />
-            </Link>
+            {["Admin", "Fleet Manager"].includes(user?.role) && (
+              <Link
+                to="/trips/add"
+                className="flex items-center justify-between p-3 px-4 rounded-xl text-sm font-semibold text-white transition-all bg-blue-600 hover:bg-blue-700 shadow-md shadow-blue-500/10 hover:shadow-blue-500/20"
+              >
+                <span className="flex items-center gap-3">
+                  <FaRoute /> Create New Trip
+                </span>
+                <FaPlus className="text-xs" />
+              </Link>
+            )}
 
-            <Link
-              to="/vehicles"
-              className="flex items-center justify-between p-3 px-4 rounded-xl text-sm font-semibold text-slate-700 hover:text-blue-600 transition-all border border-slate-200 hover:border-blue-200 bg-white hover:bg-blue-50/20"
-            >
-              <span className="flex items-center gap-3">
-                <FaTruck className="text-slate-400" /> Register Vehicle
-              </span>
-              <FaPlus className="text-xs text-slate-400" />
-            </Link>
+            {["Admin", "Fleet Manager", "Safety Officer"].includes(user?.role) && (
+              <Link
+                to="/vehicles"
+                className="flex items-center justify-between p-3 px-4 rounded-xl text-sm font-semibold text-slate-700 hover:text-blue-600 transition-all border border-slate-200 hover:border-blue-200 bg-white hover:bg-blue-50/20"
+              >
+                <span className="flex items-center gap-3">
+                  <FaTruck className="text-slate-400" /> Register Vehicle
+                </span>
+                <FaPlus className="text-xs text-slate-400" />
+              </Link>
+            )}
 
-            <Link
-              to="/drivers"
-              className="flex items-center justify-between p-3 px-4 rounded-xl text-sm font-semibold text-slate-700 hover:text-blue-600 transition-all border border-slate-200 hover:border-blue-200 bg-white hover:bg-blue-50/20"
-            >
-              <span className="flex items-center gap-3">
-                <FaUserTie className="text-slate-400" /> Add Driver Profile
-              </span>
-              <FaPlus className="text-xs text-slate-400" />
-            </Link>
+            {["Admin", "Fleet Manager"].includes(user?.role) && (
+              <Link
+                to="/drivers"
+                className="flex items-center justify-between p-3 px-4 rounded-xl text-sm font-semibold text-slate-700 hover:text-blue-600 transition-all border border-slate-200 hover:border-blue-200 bg-white hover:bg-blue-50/20"
+              >
+                <span className="flex items-center gap-3">
+                  <FaUserTie className="text-slate-400" /> Add Driver Profile
+                </span>
+                <FaPlus className="text-xs text-slate-400" />
+              </Link>
+            )}
 
-            <Link
-              to="/maintenance"
-              className="flex items-center justify-between p-3 px-4 rounded-xl text-sm font-semibold text-slate-700 hover:text-blue-600 transition-all border border-slate-200 hover:border-blue-200 bg-white hover:bg-blue-50/20"
-            >
-              <span className="flex items-center gap-3">
-                <FaTools className="text-slate-400" /> Request Maintenance
-              </span>
-              <FaPlus className="text-xs text-slate-400" />
-            </Link>
+            {["Admin", "Fleet Manager", "Safety Officer"].includes(user?.role) && (
+              <Link
+                to="/maintenance"
+                className="flex items-center justify-between p-3 px-4 rounded-xl text-sm font-semibold text-slate-700 hover:text-blue-600 transition-all border border-slate-200 hover:border-blue-200 bg-white hover:bg-blue-50/20"
+              >
+                <span className="flex items-center gap-3">
+                  <FaTools className="text-slate-400" /> Request Maintenance
+                </span>
+                <FaPlus className="text-xs text-slate-400" />
+              </Link>
+            )}
+
+            {/* General status info for Driver role */}
+            {user?.role === "Driver" && (
+              <p className="text-xs text-slate-400 text-center py-4 bg-slate-50 border border-slate-100 rounded-xl">
+                Contact Admin to change configuration.
+              </p>
+            )}
           </div>
         </div>
       </div>

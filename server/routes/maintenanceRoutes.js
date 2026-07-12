@@ -14,22 +14,22 @@ import authorize from "../middleware/roleMiddleware.js";
 const router = express.Router();
 
 // GET all records & Create
-router.get("/", protect, getAllMaintenances);
+router.get("/", protect, authorize("Admin", "Fleet Manager", "Safety Officer"), getAllMaintenances);
 router.post(
   "/",
   protect,
-  authorize("Admin", "Fleet Manager"),
+  authorize("Admin", "Fleet Manager", "Safety Officer"),
   createMaintenance
 );
 
 // GET single, Update, Delete
-router.get("/:id", protect, getMaintenanceById);
+router.get("/:id", protect, authorize("Admin", "Fleet Manager", "Safety Officer"), getMaintenanceById);
 
 // We need updateMaintenance to handle PUT
 router.put(
   "/:id",
   protect,
-  authorize("Admin", "Fleet Manager"),
+  authorize("Admin", "Fleet Manager", "Safety Officer"),
   updateMaintenance
 );
 
@@ -37,7 +37,7 @@ router.put(
 router.patch(
   "/:id/complete",
   protect,
-  authorize("Admin", "Fleet Manager"),
+  authorize("Admin", "Fleet Manager", "Safety Officer"),
   completeMaintenance
 );
 
@@ -45,8 +45,9 @@ router.patch(
 router.delete(
   "/:id",
   protect,
-  authorize("Admin"),
+  authorize("Admin", "Fleet Manager", "Safety Officer"),
   deleteMaintenance
 );
+
 
 export default router;

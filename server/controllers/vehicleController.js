@@ -53,7 +53,12 @@ export const createVehicle = async (req, res) => {
 
 export const getVehicles = async (req, res) => {
   try {
-    const vehicles = await Vehicle.find()
+    const query = {};
+    if (req.user.role === "Driver") {
+      query.assignedDriver = req.user.id;
+    }
+
+    const vehicles = await Vehicle.find(query)
       .populate("createdBy", "fullName email")
       .populate("assignedDriver", "fullName email");
 
@@ -80,6 +85,14 @@ export const getVehicleById = async (req, res) => {
       return res.status(404).json({
         success: false,
         message: "Vehicle not found",
+      });
+    }
+
+    // RBAC check: Drivers can only view their own assigned vehicle
+    if (req.user.role === "Driver" && vehicle.assignedDriver?._id.toString() !== req.user.id) {
+      return res.status(403).json({
+        success: false,
+        message: "Access denied: You can only view your assigned vehicle",
       });
     }
 

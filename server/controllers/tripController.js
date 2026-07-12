@@ -22,7 +22,12 @@ export const createTrip = async (req, res) => {
 
 export const getTrips = async (req, res) => {
   try {
-    const trips = await Trip.find()
+    const query = {};
+    if (req.user.role === "Driver") {
+      query.driver = req.user.id;
+    }
+
+    const trips = await Trip.find(query)
       .populate("vehicle")
       .populate("driver", "fullName email")
       .populate("createdBy", "fullName");
@@ -51,6 +56,14 @@ export const getTripById = async (req, res) => {
       return res.status(404).json({
         success: false,
         message: "Trip not found",
+      });
+    }
+
+    // RBAC check: Drivers can only view their own trips
+    if (req.user.role === "Driver" && trip.driver?._id.toString() !== req.user.id) {
+      return res.status(403).json({
+        success: false,
+        message: "Access denied: You can only view your own trips",
       });
     }
 

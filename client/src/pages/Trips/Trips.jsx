@@ -19,8 +19,10 @@ import toast from "react-hot-toast";
 import dayjs from "dayjs";
 import { getTrips, deleteTrip } from "../../services/tripService";
 import DeleteModal from "../../components/common/DeleteModal";
+import { useAuth } from "../../context/AuthContext";
 
 function Trips() {
+  const { user } = useAuth();
   const navigate = useNavigate();
   const [trips, setTrips] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -166,13 +168,15 @@ function Trips() {
             Manage and monitor all fleet trips
           </p>
         </div>
-        <button
-          onClick={() => navigate("/trips/add")}
-          className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-blue-600 rounded-xl hover:bg-blue-700 transition-all duration-200 cursor-pointer shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 hover:-translate-y-0.5"
-        >
-          <FaPlus className="text-xs" />
-          New Trip
-        </button>
+        {["Admin", "Fleet Manager"].includes(user?.role) && (
+          <button
+            onClick={() => navigate("/trips/add")}
+            className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-blue-600 rounded-xl hover:bg-blue-700 transition-all duration-200 cursor-pointer shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 hover:-translate-y-0.5"
+          >
+            <FaPlus className="text-xs" />
+            New Trip
+          </button>
+        )}
       </div>
 
       {/* Stat Cards */}
@@ -330,30 +334,34 @@ function Trips() {
                           >
                             <FaEye className="text-sm" />
                           </button>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              navigate(`/trips/${trip._id}/edit`);
-                            }}
-                            className="p-2 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-all duration-150 cursor-pointer"
-                            title="Edit"
-                          >
-                            <FaPen className="text-sm" />
-                          </button>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setDeleteModal({
-                                isOpen: true,
-                                tripId: trip._id,
-                                tripName: `${trip.source} → ${trip.destination}`,
-                              });
-                            }}
-                            className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all duration-150 cursor-pointer"
-                            title="Delete"
-                          >
-                            <FaTrash className="text-sm" />
-                          </button>
+                          {["Admin", "Fleet Manager"].includes(user?.role) && (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                navigate(`/trips/${trip._id}/edit`);
+                              }}
+                              className="p-2 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-all duration-150 cursor-pointer"
+                              title="Edit"
+                            >
+                              <FaPen className="text-sm" />
+                            </button>
+                          )}
+                          {["Admin"].includes(user?.role) && (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setDeleteModal({
+                                  isOpen: true,
+                                  tripId: trip._id,
+                                  tripName: `${trip.source} → ${trip.destination}`,
+                                });
+                              }}
+                              className="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all duration-150 cursor-pointer"
+                              title="Delete"
+                            >
+                              <FaTrash className="text-sm" />
+                            </button>
+                          )}
                         </div>
                       </td>
                     </tr>
