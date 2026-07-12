@@ -11,9 +11,13 @@ import TripDetail from "../pages/Trips/TripDetail";
 import AddTrip from "../pages/Trips/AddTrip";
 import EditTrip from "../pages/Trips/EditTrip";
 import Maintenance from "../pages/Maintenance/Maintenance";
+
+import Fuel from "../pages/Fuel/Fuel";
+
 import Reports from "../pages/Reports/Reports";
 import AIAssistant from "../pages/AIAssistant/AIAssistant";
 import Profile from "../pages/Profile/Profile";
+import UserRoles from "../pages/UserRoles/UserRoles";
 
 import DashboardLayout from "../layouts/DashboardLayout";
 import ProtectedRoute from "../components/common/ProtectedRoute";
@@ -33,11 +37,13 @@ function AppRoutes() {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/profile" element={<Profile />} />
 
+
           {/* Vehicles (Admin, Fleet Manager, Safety Officer, Driver) */}
           <Route
             element={<ProtectedRoute allowedRoles={["Admin", "Fleet Manager", "Safety Officer", "Driver"]} />}
           >
             <Route path="/vehicles" element={<Vehicles />} />
+            <Route path="/fuel" element={<Fuel />} />
           </Route>
 
           {/* Drivers Management (Admin, Fleet Manager) */}
@@ -64,8 +70,6 @@ function AppRoutes() {
             <Route path="/maintenance" element={<Maintenance />} />
           </Route>
 
-          
-
           {/* Reports (Admin, Financial Analyst) */}
           <Route element={<ProtectedRoute allowedRoles={["Admin", "Financial Analyst"]} />}>
             <Route path="/reports" element={<Reports />} />
@@ -74,6 +78,11 @@ function AppRoutes() {
           {/* AI Fleet Assistant (Admin, Fleet Manager) */}
           <Route element={<ProtectedRoute allowedRoles={["Admin", "Fleet Manager"]} />}>
             <Route path="/ai-assistant" element={<AIAssistant />} />
+          </Route>
+
+          {/* User Management / Roles (Admin Only) */}
+          <Route element={<ProtectedRoute allowedRoles={["Admin"]} />}>
+            <Route path="/user-roles" element={<UserRoles />} />
           </Route>
         </Route>
       </Route>

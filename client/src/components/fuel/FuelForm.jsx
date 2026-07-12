@@ -379,7 +379,7 @@ function FuelForm({ fuelLog, onClose, refreshFuelLogs }) {
           <button
             type="button"
             onClick={onClose}
-            className="px-5 py-2.5 text-sm font-semibold text-slate-600 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-all"
+            className="px-5 py-2.5 text-sm font-semibold text-slate-600 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-all cursor-pointer"
           >
             Cancel
           </button>
@@ -387,7 +387,7 @@ function FuelForm({ fuelLog, onClose, refreshFuelLogs }) {
             type="submit"
             form="fuelLogForm"
             disabled={isSubmitting || loadingDropdowns}
-            className="px-5 py-2.5 text-sm font-semibold text-white bg-blue-600 rounded-xl hover:bg-blue-700 disabled:bg-blue-400 transition-all shadow-md shadow-blue-500/20"
+            className="px-5 py-2.5 text-sm font-semibold text-white bg-blue-600 rounded-xl hover:bg-blue-700 disabled:bg-blue-400 transition-all shadow-md shadow-blue-500/20 cursor-pointer"
           >
             {isSubmitting
               ? "Saving..."
