@@ -7,7 +7,7 @@ import vehicleRoutes from "./routes/vehicleRoutes.js";
 import driverRoutes from "./routes/driverRoutes.js";
 import tripRoutes from "./routes/tripRoutes.js";
 import maintenanceRoutes from "./routes/maintenanceRoutes.js";
-import fuelLogRoutes from "./routes/fuelLogRoutes.js";
+import aiRoutes from "./routes/aiRoutes.js";
 
 import connectDB from "./config/db.js";
 
@@ -39,7 +39,7 @@ app.use("/api/vehicles", vehicleRoutes);
 app.use("/api/drivers", driverRoutes);
 app.use("/api/trips", tripRoutes);
 app.use("/api/maintenance", maintenanceRoutes);
-app.use("/api/fuel", fuelLogRoutes);
+app.use("/api/ai", aiRoutes);
 
 const PORT = process.env.PORT || 5000;
 
