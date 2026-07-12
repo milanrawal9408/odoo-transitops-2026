@@ -5,6 +5,7 @@ import cookieParser from "cookie-parser";
 import authRoutes from "./routes/authRoutes.js";
 import vehicleRoutes from "./routes/vehicleRoutes.js";
 import tripRoutes from "./routes/tripRoutes.js";
+import maintenanceRoutes from "./routes/maintenanceRoutes.js";
 
 import connectDB from "./config/db.js";
 
@@ -34,6 +35,7 @@ app.get("/", (req, res) => {
 app.use("/api/auth", authRoutes);
 app.use("/api/vehicles", vehicleRoutes);
 app.use("/api/trips", tripRoutes);
+app.use("/api/maintenance", maintenanceRoutes);
 
 const PORT = process.env.PORT || 5000;
 
