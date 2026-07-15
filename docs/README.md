@@ -14,6 +14,7 @@ TransitOps is a modern Fleet Management ERP built for the Odoo Hackathon 2026.
 - Fuel Log Management
 - Expense Management
 - Reports & Analytics
+- AI Fleet Assistant 
 
 ## 🛠 Tech Stack
 
